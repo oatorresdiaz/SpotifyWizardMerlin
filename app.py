@@ -1,8 +1,5 @@
 import os
-import numpy
 import json
-import asyncio
-from multiprocessing import Pool
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 from scripts import download_and_classify_music
@@ -32,25 +29,19 @@ def classify_music():
 
             track_meta = request.json['track_meta']
 
-            pool = Pool()
-
             results = []
 
             for meta in track_meta:
 
-                results.append(pool.apply_async(download_and_classify_music, (search_term, meta[1], meta[0])))
-
-            pool.close()
-
-            pool.join()
+                results.append(download_and_classify_music(search_term, meta[1], meta[0]))
 
             res = []
 
             for result in results:
 
-                if result._value is not None:
+                if result is not None:
 
-                    res.append(result._value)
+                    res.append(result)
 
             return json.dumps(res)
 
