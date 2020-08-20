@@ -1,10 +1,6 @@
 flask
-flask_sqlalchemy
-Flask-Migrate
 flask-cors
-psycopg2-binary
 requests
-numpy
 sklearn
 gunicorn
 pydub
