@@ -32,7 +32,7 @@ def classify_music():
 
             track_meta = request.json['track_meta']
 
-            pool = Pool(processes=len(track_meta))
+            pool = Pool()
 
             results = []
 
