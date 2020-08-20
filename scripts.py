@@ -4,22 +4,22 @@ import csv
 import urllib.request
 from pydub import AudioSegment
 from ML import train_segment_classifier_and_create_model, single_file_classification
-from SpotifyAPI import SpotifyAPI
+# from SpotifyAPI import SpotifyAPI
 
 
-def create_ml_model():
-
-    # Step 1: Download music from Spotify playlists categorized by the following search terms.
-
-    search_terms = ['beach', 'love', 'sad', 'classical']
-
-    for search_term in search_terms:
-
-        download_playlist_music(search_term, 'music/train/' + search_term.replace(' ', '_'))
-
-    # Step 2: Train and create ML model
-
-    train_segment_classifier_and_create_model('music/train', 'rfMusicGenre')
+# def create_ml_model():
+#
+#     # Step 1: Download music from Spotify playlists categorized by the following search terms.
+#
+#     search_terms = ['beach', 'love', 'sad', 'classical']
+#
+#     for search_term in search_terms:
+#
+#         download_playlist_music(search_term, 'music/train/' + search_term.replace(' ', '_'))
+#
+#     # Step 2: Train and create ML model
+#
+#     train_segment_classifier_and_create_model('music/train', 'rfMusicGenre')
 
 
 def classify_track(path):
@@ -29,28 +29,28 @@ def classify_track(path):
     return single_file_classification(path, model_path)
 
 
-def download_playlist_music(search_term, parent_directory):
-
-    spotify_api = SpotifyAPI()
-
-    playlist = spotify_api.search_playlists(search_term)
-
-    tracks = []
-
-    for playlist in playlist:
-
-        if 'id' in playlist:
-            playlist_id = playlist['id']
-
-            tracks = spotify_api.get_tracks_from_playlist(playlist_id)
-
-    for track in tracks:
-
-        if 'preview_url' in track and track['preview_url'] is not None:
-
-            name = track['name'].replace(' ', '_').replace('\'', '').lower()
-
-            download_preview_song(track['preview_url'], name, parent_directory + '/')
+# def download_playlist_music(search_term, parent_directory):
+#
+#     spotify_api = SpotifyAPI()
+#
+#     playlist = spotify_api.search_playlists(search_term)
+#
+#     tracks = []
+#
+#     for playlist in playlist:
+#
+#         if 'id' in playlist:
+#             playlist_id = playlist['id']
+#
+#             tracks = spotify_api.get_tracks_from_playlist(playlist_id)
+#
+#     for track in tracks:
+#
+#         if 'preview_url' in track and track['preview_url'] is not None:
+#
+#             name = track['name'].replace(' ', '_').replace('\'', '').lower()
+#
+#             download_preview_song(track['preview_url'], name, parent_directory + '/')
 
 
 def download_preview_song(url, name, path='/'):
