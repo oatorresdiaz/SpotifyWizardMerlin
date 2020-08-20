@@ -36,7 +36,13 @@ def classify_music():
 
             for meta in track_meta:
 
-                results.append(pool.apply_async(download_and_classify_music, (search_term, meta[1], meta[0])))
+                threshold = 0.5
+
+                if os.environ.get('IS_HEROKU'):
+
+                    threshold = os.environ.get('PROB_THRESHOLD')
+
+                results.append(pool.apply_async(download_and_classify_music, (search_term, meta[1], meta[0], 'music', threshold)))
 
             pool.close()
 
