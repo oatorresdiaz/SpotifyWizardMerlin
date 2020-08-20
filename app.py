@@ -2,6 +2,7 @@ import os
 import numpy
 import json
 import asyncio
+from multiprocessing import Pool
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 from scripts import download_and_classify_music
@@ -31,23 +32,25 @@ def classify_music():
 
             track_meta = request.json['track_meta']
 
-            loop = asyncio.new_event_loop()
+            pool = Pool(processes=len(track_meta))
 
-            asyncio.set_event_loop(loop)
+            results = []
 
-            classification_processes = [download_and_classify_music(search_term, meta[1], meta[0]) for meta in track_meta]
+            for meta in track_meta:
 
-            results = loop.run_until_complete(asyncio.gather(*classification_processes))
+                results.append(pool.apply_async(download_and_classify_music, (search_term, meta[1], meta[0])))
 
-            loop.close()
+            pool.close()
+
+            pool.join()
 
             res = []
 
             for result in results:
 
-                if result:
+                if result._value is not None:
 
-                    res.append(result)
+                    res.append(result._value)
 
             return json.dumps(res)
 

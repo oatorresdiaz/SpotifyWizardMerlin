@@ -8,11 +8,11 @@ from ML import train_segment_classifier_and_create_model, single_file_classifica
 # from SpotifyAPI import SpotifyAPI
 
 
-async def download_and_classify_music(search_term, url, track_id, path='music', threshold=0.5):
+def download_and_classify_music(search_term, url, track_id, path='music', threshold=0.5):
 
     print('Classifying track with id ' + track_id + '.')
 
-    path = await download_preview_song(url, track_id, path)
+    path = download_preview_song(url, track_id, path)
 
     if path:
 
@@ -62,7 +62,7 @@ def classify_track(path):
 #             download_preview_song(track['preview_url'], name, parent_directory + '/')
 
 
-async def download_preview_song(url, name, path='/'):
+def download_preview_song(url, name, path='/'):
     """
     Downloads mp3 from Spotify library (preview only) and converts it to wav.
     :param url: str
