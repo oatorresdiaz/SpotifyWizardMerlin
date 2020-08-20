@@ -8,6 +8,21 @@ from ML import train_segment_classifier_and_create_model, single_file_classifica
 # from SpotifyAPI import SpotifyAPI
 
 
+# def create_ml_model():
+
+    # Step 1: Download music from Spotify playlists categorized by the following search terms.
+
+    # search_terms = ['happy', 'sad', 'love', 'beach', 'jazz', 'rock', 'classical']
+    #
+    # for search_term in search_terms:
+    #
+    #     download_playlist_music(search_term, 'music/train/' + search_term.replace(' ', '_'))
+
+    # Step 2: Train and create ML model
+
+    # train_segment_classifier_and_create_model('music/train', 'rfMusicGenre')
+
+
 def download_and_classify_music(search_term, url, track_id, path='music', threshold=0.5):
 
     print('Classifying track with id ' + track_id + '.')
