@@ -1,25 +1,34 @@
 import os
 import ssl
 import csv
+import numpy
 import urllib.request
 from pydub import AudioSegment
 from ML import train_segment_classifier_and_create_model, single_file_classification
 # from SpotifyAPI import SpotifyAPI
 
 
-# def create_ml_model():
-#
-#     # Step 1: Download music from Spotify playlists categorized by the following search terms.
-#
-#     search_terms = ['beach', 'love', 'sad', 'classical']
-#
-#     for search_term in search_terms:
-#
-#         download_playlist_music(search_term, 'music/train/' + search_term.replace(' ', '_'))
-#
-#     # Step 2: Train and create ML model
-#
-#     train_segment_classifier_and_create_model('music/train', 'rfMusicGenre')
+async def download_and_classify_music(search_term, url, track_id, path='music', threshold=0.5):
+
+    print('Classifying track with id ' + track_id + '.')
+
+    path = await download_preview_song(url, track_id, path)
+
+    if path:
+
+        class_id, probability, classes = classify_track(path)
+
+        os.remove(path)
+
+        if classes[int(class_id)] == search_term and numpy.max(probability) >= threshold:
+
+            print('Classification of track with id ' + track_id + ' completed.')
+
+            return track_id
+
+    print('Classification of track with id ' + track_id + ' completed.')
+
+    return None
 
 
 def classify_track(path):
@@ -53,7 +62,7 @@ def classify_track(path):
 #             download_preview_song(track['preview_url'], name, parent_directory + '/')
 
 
-def download_preview_song(url, name, path='/'):
+async def download_preview_song(url, name, path='/'):
     """
     Downloads mp3 from Spotify library (preview only) and converts it to wav.
     :param url: str
@@ -69,6 +78,8 @@ def download_preview_song(url, name, path='/'):
     name = name.replace('.mp3', '').replace(' ', '_').replace('/', '').replace(',', '')
 
     filename = path + '/' + name + '.mp3'
+
+    print('Downloading ' + filename)
 
     if not os.path.isdir(path):
         os.makedirs(path)

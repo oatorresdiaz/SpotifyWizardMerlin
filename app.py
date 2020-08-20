@@ -1,9 +1,10 @@
 import os
 import numpy
 import json
+import asyncio
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
-from scripts import download_preview_song, classify_track
+from scripts import download_and_classify_music
 
 app = Flask(__name__)
 cors = CORS(app)
@@ -22,8 +23,6 @@ def classify_music():
 
     if request.json is not None:
 
-        results = []
-
         if 'search_term' in request.json and 'track_meta' in request.json:
 
             print('Received new request.')
@@ -32,35 +31,25 @@ def classify_music():
 
             track_meta = request.json['track_meta']
 
-            for index, meta in enumerate(track_meta):
+            loop = asyncio.new_event_loop()
 
-                print('Classifying track ' + str(index + 1) + ' out of ' + str(len(track_meta)) + '.')
+            asyncio.set_event_loop(loop)
 
-                track_id = meta[0]
+            classification_processes = [download_and_classify_music(search_term, meta[1], meta[0]) for meta in track_meta]
 
-                track_preview_url = meta[1]
+            results = loop.run_until_complete(asyncio.gather(*classification_processes))
 
-                path = download_preview_song(track_preview_url, track_id, 'music')
+            loop.close()
 
-                if path:
+            res = []
 
-                    class_id, probability, classes = classify_track(path)
+            for result in results:
 
-                    if classes[int(class_id)] == search_term:
+                if result:
 
-                        if numpy.max(probability) >= 0.5:
+                    res.append(result)
 
-                            results.append(track_id)
-
-                    os.remove(path)
-
-                else:
-
-                    print('Could not download track preview with id: ' + track_id)
-
-            print('Classification completed.')
-
-            return json.dumps(results)
+            return json.dumps(res)
 
 
 if __name__ == "__main__":
